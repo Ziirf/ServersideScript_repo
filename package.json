@@ -1,0 +1,15 @@
+{
+  "name": "repo",
+  "version": "0.0.1",
+  "description": "Repository for Serverside Scripts",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./src/server.js"
+  },
+  "author": "Nicolai Friis",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
