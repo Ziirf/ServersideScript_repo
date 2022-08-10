@@ -63,13 +63,32 @@ exports.logger = function(req, res) {
 exports.getData = function (req) {
     return new Promise((resolve, reject) => {
         let dataStr = "";
-
+        
         req.on("data", function (chunk) {
             dataStr += chunk;
         })
         req.on("end", function () {
-            console.log(JSON.parse(dataStr));
-            resolve(JSON.parse(dataStr));
+            try {
+                resolve(JSON.parse(dataStr));
+            } catch (err) {
+                reject(new Error('Something went wrong.'));
+            }
+            
         });
+        
     });
+}
+
+exports.validateJsonSchema = function (json, schema) {
+    if (Object.keys(json).length != schema.length) {
+        return false;
+    }
+
+    for (const property in json) {
+        if (!schema.includes(property)) {
+            return false;
+        }
+    }
+
+    return true;
 }

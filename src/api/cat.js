@@ -1,4 +1,4 @@
-const { sendJSON, getData } = require("../utilities")
+const { sendJSON, getData, validateJsonSchema } = require("../utilities")
 const currentRoute = "/api/cat";
 
 module.exports = {
@@ -40,8 +40,17 @@ module.exports = {
             };
 
             getData(req)
-                .then((input) => {
-                    sendJSON(req, res, { route: currentRoute, method: req.method, says: "Miauw", body: input })
+                .then( function (input) {
+                    const schema = ["Cat", "Sound"];
+
+                    if (!validateJsonSchema(input, schema)) {
+                        sendJSON(req, res, { route: currentRoute, method: req.method, error: "Schema doesn't Match" }, 400);
+                        return;
+                    }
+
+                    sendJSON(req, res, { route: currentRoute, method: req.method, says: "Miauw", body: input });
+                }).catch( function (error) {
+                    sendJSON(req, res, { route: currentRoute, method: req.method, error: error }, 400);
                 });
         }
     },
