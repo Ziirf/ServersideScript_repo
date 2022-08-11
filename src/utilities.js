@@ -1,6 +1,5 @@
 const {readFile, createReadStream} = require("fs");
 const { extname } = require("path");
-const { resolve } = require("path/posix");
 const { hrtime } = require("process");
 const mimetypes = require("./mimetypes")
 
@@ -52,15 +51,32 @@ exports.redirect = function(res, url) {
 
 exports.logger = function(req, res) {
     const startTime = hrtime.bigint();
-    let logStr = `[${new Date().toLocaleString()}] ${req.method}: ${req.url}`;
+    const logTime = new Date().toLocaleString();
     res.on("finish", function(){
-        const duration = Number(hrtime.bigint() - startTime) /  1000000;
-        logStr += ` [${res.statusCode} ${res.statusMessage}]  -  ${duration}ms`;
-        console.log(logStr);
+        const duration = Number(hrtime.bigint() - startTime) / 1000000;
+
+        let color;
+        switch (true) {
+            case res.statusCode >= 400:
+                color = "red"
+                break;
+            case res.statusCode >= 300:
+                color = "yellow"
+                break;
+            case res.statusCode >= 200:
+                color = "green"
+                break;
+            case res.statusCode >= 100:
+                color = "white"
+                break;
+        }
+        //const color = res.statusCode >= 400 ? exports.textColor("red") : exports.textColor("green");
+        const logMsg = `${textColor(color)}[${logTime}] [${res.statusCode}] ${req.method}: ${req.url} (${duration}ms)${textColor()}`
+        console.log(logMsg);
     })
 }
 
-exports.getData = function (req) {
+exports.getData = function(req) {
     return new Promise((resolve, reject) => {
         let dataStr = "";
         
@@ -79,7 +95,7 @@ exports.getData = function (req) {
     });
 }
 
-exports.validateJsonSchema = function (json, schema) {
+exports.validateJsonSchema = function(json, schema) {
     if (Object.keys(json).length != schema.length) {
         return false;
     }
@@ -91,4 +107,20 @@ exports.validateJsonSchema = function (json, schema) {
     }
 
     return true;
+}
+
+textColor = function (color = 'reset') {
+    const colors = {
+        reset: "\x1b[0m",
+        black: "\x1b[30m",
+        red: "\x1b[31m",
+        green: "\x1b[32m",
+        yellow: "\x1b[33m",
+        blue: "\x1b[34m",
+        magenta: "\x1b[35m",
+        cyan: "\x1b[36m",
+        white: "\x1b[37m",
+    }
+    
+    return colors[color];
 }

@@ -1,4 +1,4 @@
-const { sendJSON } = require("../utilities")
+const { sendJSON } = require("../utilities");
 
 module.exports = {
     "GET": {
