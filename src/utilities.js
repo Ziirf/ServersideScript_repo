@@ -109,6 +109,20 @@ exports.validateJsonSchema = function(json, schema) {
     return true;
 }
 
+exports.validateJsonContent = function(content, types) {
+    if (content.length != types.length) {
+        return false;
+    };
+
+    for (let i = 0; i < content.length; i++) {
+        if (typeof content[i] != types[i]) {
+            return false;
+        };
+    }
+
+    return true;
+}
+
 textColor = function (color = 'reset') {
     const colors = {
         reset: "\x1b[0m",

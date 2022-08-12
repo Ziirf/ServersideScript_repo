@@ -1,5 +1,5 @@
 const conf = require("./config/serverconf.json");
-const { redirect, logger, streamFile } = require("./utilities");
+const { redirect, logger, streamFile, sendJSON } = require("./utilities");
 const api = {
     "student": require("./api/student"),
     "cat" : require("./api/cat"),
@@ -9,7 +9,7 @@ const api = {
 module.exports = function(req, res) {
     logger(req, res);
     const url = new URL(req.url, `${conf.host}:${conf.port}`);
-
+    
     const endpoint = url.pathname;
     if (endpoint === "/") {
         redirect(res, `${conf.host}:${conf.port}/html/index.html`);
@@ -21,7 +21,7 @@ module.exports = function(req, res) {
         return;
     })
 
-    regexCheck(/^\/api\/(?<route>\w+)\/?(?<param>\d+)?$/, endpoint, function(result) {
+    regexCheck(/^\/api\/(?<route>\w+)\/?(?<param>[\d\w]+)?$/, endpoint, function(result) {
         if (api[result.groups.route]) {
             if (api[result.groups.route][req.method]){
                 api[result.groups.route][req.method].handler(req, res, result.groups.param);
